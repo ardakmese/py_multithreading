@@ -4,7 +4,7 @@
 import random
 import os
 import time
-import numpy as np
+import threading as thread
 
 class Matrix:
     def __init__(self, x, y, threading = 0):
@@ -30,9 +30,21 @@ class Matrix:
                 for k in range(matrix.mX):
                     res[i][j] += self.mList[i][k] * matrix.mList[k][j]
         print("Result ", res)
-        res = np.dot(self.mList, matrix.mList)
-        print("Result with np: ", res)
         print("--- %s seconds ---" % (time.time() - start_time))
+
+    def multiplyWithThread(self, matrix):
+        start_time = time.time()
+        res = [[0 for x in range(self.mX)] for y in range(matrix.mY)]
+
+        for i in range(self.mX):
+            for j in range(matrix.mY):
+                for k in range(matrix.mX):
+                    res[i][j] += self.mList[i][k] * matrix.mList[k][j]
+
+
+        print("Result ", res)
+        print("--- %s seconds ---" % (time.time() - start_time))
+
 
 # input two matrices of size n x m
 # res = [[0 for x in range(3)] for y in range(3)]
@@ -61,16 +73,27 @@ def multiplyWithThreading():
 
     firstMatrix = Matrix(int(firstX), int(firstY), int(threadSize))
     secondMatrix = Matrix(int(secondX), int(secondY))
-    firstMatrix.multiply(secondMatrix)
 
+    thread_handle = []
+    for j in range(0, int(threadSize)):
+        t = thread(target=firstMatrix.multiply, args= secondMatrix)
+        thread_handle.append(t)
+        t.start()
+
+    for j in range(0, int(threadSize)):
+        thread_handle[j].join()
 
 if __name__ == '__main__':
     while True:
-        setMatrix()
-        firstMatrix = Matrix(int(firstX), int(firstY))
-        secondMatrix = Matrix(int(secondX), int(secondY))
-        firstMatrix.multiply(secondMatrix)
+        # multiply with one thread
+        # setMatrix()
+        # firstMatrix = Matrix(int(firstX), int(firstY))
+        # secondMatrix = Matrix(int(secondX), int(secondY))
+        # firstMatrix.multiply(secondMatrix)
+        # multiply with multithreading
 
+        start_time = time.time()
         multiplyWithThreading()
+        print("--- %s seconds ---" % (time.time() - start_time))
 
 
