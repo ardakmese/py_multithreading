@@ -4,6 +4,7 @@
 import random
 import os
 import time
+import numpy as np
 
 class Matrix:
     def __init__(self, x, y, threading = 0):
@@ -19,7 +20,7 @@ class Matrix:
             for y  in range(self.mY):
                 list.append(random.uniform(0,1))
             self.mList.append(list)
-        print(self.mList)
+        print("Matrix to multiply: ", self.mList)
 
     def multiply(self, matrix):
         start_time = time.time()
@@ -28,7 +29,9 @@ class Matrix:
             for j in range(matrix.mY):
                 for k in range(matrix.mX):
                     res[i][j] += self.mList[i][k] * matrix.mList[k][j]
-        print(res)
+        print("Result ", res)
+        res = np.dot(self.mList, matrix.mList)
+        print("Result with np: ", res)
         print("--- %s seconds ---" % (time.time() - start_time))
 
 # input two matrices of size n x m
@@ -45,8 +48,7 @@ def setMatrix():
     if not (firstX.isdigit() or firstY.isdigit() or secondX.isdigit() or secondY.isdigit()):
         print("Please enter inputs correctly!")
         setMatrix()
-    elif not (firstX == secondX and firstY == secondY) or (
-            firstX != secondX and firstX == secondY):  # necessary for multiplying two matrixes to check dimensions!
+    elif not (firstX == secondX and firstY == secondY) and  (firstY != secondX ):  # necessary for multiplying two matrixes to check dimensions!
         print("Please enter dimensions correctly for multiplying!")
         setMatrix()
 
