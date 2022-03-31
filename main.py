@@ -1,53 +1,11 @@
 # Operating Systems Homework
 # Date: 24.03.2022
 
-import random
 import os
 import time
-import threading as thread
+from threading import Thread
+from Matrix import Matrix
 
-class Matrix:
-    def __init__(self, x, y, threading = 0):
-        self.mX = x
-        self.mY = y
-        self.mList = []
-        self.fill()
-        self.mThread = threading
-
-    def fill(self):
-        for x in range(self.mX):
-            list = []
-            for y  in range(self.mY):
-                list.append(random.uniform(0,1))
-            self.mList.append(list)
-        print("Matrix to multiply: ", self.mList)
-
-    def multiply(self, matrix):
-        start_time = time.time()
-        res = [[0 for x in range(self.mX)] for y in range(matrix.mY)]
-        for i in range(self.mX):
-            for j in range(matrix.mY):
-                for k in range(matrix.mX):
-                    res[i][j] += self.mList[i][k] * matrix.mList[k][j]
-        print("Result ", res)
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-    def multiplyWithThread(self, matrix):
-        start_time = time.time()
-        res = [[0 for x in range(self.mX)] for y in range(matrix.mY)]
-
-        for i in range(self.mX):
-            for j in range(matrix.mY):
-                for k in range(matrix.mX):
-                    res[i][j] += self.mList[i][k] * matrix.mList[k][j]
-
-
-        print("Result ", res)
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-
-# input two matrices of size n x m
-# res = [[0 for x in range(3)] for y in range(3)]
 
 def setMatrix():
     global firstX, firstY, secondX, secondY
@@ -73,27 +31,30 @@ def multiplyWithThreading():
 
     firstMatrix = Matrix(int(firstX), int(firstY), int(threadSize))
     secondMatrix = Matrix(int(secondX), int(secondY))
-
+    mThread = int(threadSize)
     thread_handle = []
+
+    start_time = time.time()
     for j in range(0, int(threadSize)):
-        t = thread(target=firstMatrix.multiply, args= secondMatrix)
+        t = Thread(target=firstMatrix.multiplyWithThread,
+                   args= (secondMatrix, (int(int(firstX)/mThread) * j), int((int(secondY)/mThread) * (j+1))))
         thread_handle.append(t)
         t.start()
-
     for j in range(0, int(threadSize)):
         thread_handle[j].join()
+
+    print("Time result while using " + threadSize + " thread: ", (time.time() - start_time) , " seconds")
+
 
 if __name__ == '__main__':
     while True:
         # multiply with one thread
-        # setMatrix()
-        # firstMatrix = Matrix(int(firstX), int(firstY))
-        # secondMatrix = Matrix(int(secondX), int(secondY))
-        # firstMatrix.multiply(secondMatrix)
-        # multiply with multithreading
+        setMatrix()
+        firstMatrix = Matrix(int(firstX), int(firstY))
+        secondMatrix = Matrix(int(secondX), int(secondY))
+        firstMatrix.multiply(secondMatrix)
 
-        start_time = time.time()
+        # multiply with multithreading
         multiplyWithThreading()
-        print("--- %s seconds ---" % (time.time() - start_time))
 
 
