@@ -9,41 +9,57 @@ import random
 global sharedData
 sharedData = 1000
 
-class ReaderWriter():
+readMutex = threading.Semaphore()
+writeMutex = threading.Semaphore()
 
-    def __init__(self, writerNo = None, writerFunction = None ):
-        self.readMutex = threading.Semaphore()
-        self.writeMutex = threading.Semaphore()
-        self.readerCount = 0
-        self.mWriter = writerNo
-        self.mFunction = writerFunction
 
+class Reader():
+    def __init__(self):
+        self.readCount = 0
+        self.readerCalledCounter = 0
 
     def reader(self):
         while True:
-            self.readMutex.acquire()
-            self.readerCount += 1
+            readMutex.acquire()
+            self.readCount += 1
             global sharedData
-            if self.readerCount == 1:
-                self.writeMutex.acquire()
-            self.readMutex.release()
-            print(r"[Okuyucu process", self.readerCount, r"] : Mevcut bakiye=", sharedData)
-            self.readMutex.acquire()
-            self.readerCount -= 1
-            if self.readerCount == 0:
-                self.writeMutex.release()
-            self.readMutex.release()
-            time.sleep(random.randint(1, 5))
+            if self.readCount == 1:
+                writeMutex.acquire()
+            readMutex.release()
+            self.readerCalledCounter += 1
+            print(r"[Okuyucu process", self.readCount, r"] : Mevcut bakiye=", sharedData)
+            readMutex.acquire()
+            self.readCount -= 1
+            if self.readCount == 0:
+                writeMutex.release()
+            readMutex.release()
+            time.sleep(random.randint(1 ,5))
+
+class Writer():
+    def __init__(self):
+        self.writerCalledCounter = 0
 
     def writer(self):
         while True:
+            writeMutex.acquire()
             global sharedData
-            self.writeMutex.acquire()
-            print(r"[Yazıcı process ", self.mWriter, r"] Mevcut bakiye=",sharedData, end="")
-            sharedData = self.mFunction(sharedData)
-            print(" Yeni bakiye=", sharedData)
-            self.writeMutex.release()
-            time.sleep(random.randint(1, 5))
+            print(r"[Yazıcı process 1] Mevcut bakiye=", sharedData, end="")
+            sharedData = sharedData + 50
+            self.writerCalledCounter += 1
+            print(", 50 arttırıldı. Yeni bakiye=", sharedData)
+            writeMutex.release()
+            time.sleep(random.randint(1 ,5))
+
+    def writer2(self):
+        while True:
+            writeMutex.acquire()
+            global sharedData
+            print(r"[Yazıcı process 2] Mevcut bakiye=", sharedData, end="")
+            sharedData =  sharedData - (10 * sharedData / 100)
+            self.writerCalledCounter += 1
+            print(", %10 azaltıldı. Yeni bakiye=", sharedData)
+            writeMutex.release()
+            time.sleep(random.randint(1 ,5))
 
 
 def askForReader():
@@ -57,26 +73,17 @@ def askForReader():
 
 if __name__ == "__main__":
     readerSize = askForReader()
-
-    lambdaIncrease = lambda x: x + 50
-    lambdaDivide = lambda x: x - (10 * x / 100)
-
-    writer1 = ReaderWriter(1, lambdaIncrease)
-    writer2 = ReaderWriter(2, lambdaDivide)
-    thWriter1 = threading.Thread(target=writer1.writer)
-    thWriter2 = threading.Thread(target=writer2.writer)
-    thWriter1.start()
-    thWriter2.start()
-
-
+    reader = Reader()
     for read in range(readerSize):
-            reader = ReaderWriter()
-            th = threading.Thread(target=reader.reader)
-            th.start()
+        th = threading.Thread(target=reader.reader)
+        th.start()
 
+    writer = Writer()
+    writer1 = threading.Thread(target=writer.writer)
+    writer1.start()
 
-
-    # thWriter1.join()
-    # thWriter2.join()
-
+    writer2 = threading.Thread(target=writer.writer2)
+    writer2.start()
+    if input() == 'q':
+        print("quit")
 
