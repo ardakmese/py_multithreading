@@ -28,8 +28,8 @@ class Matrix:
             for j in range(matrix.mY):
                 for k in range(matrix.mX):
                     res[i][j] += self.mList[i][k] * matrix.mList[k][j]
-        # print("Multiplied Matrix : ", res)
-        print("Calculation time with one thread: ", (time.time() - start_time), " seconds")
+        # print("Çarpım sonucu : ", res)
+        print("Tek thread ile çarpımda geçen süre : ", (time.time() - start_time), " saniye")
         return time.time() - start_time
 
     def multiplyWithThread(self, matrix, vecStart, vecEnd):
