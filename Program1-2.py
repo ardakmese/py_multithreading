@@ -1,11 +1,11 @@
 # Operating Systems Homework
 # Date: 24.03.2022
+# Author : Arda AKMEŞE
 
 import os
 import time
 from threading import Thread
 from Matrix import Matrix
-
 
 def setMatrix():
     global firstX, firstY, secondX, secondY
@@ -24,26 +24,28 @@ def setMatrix():
 
 def multiplyWithThreading():
     setMatrix()
-    threadSize = input("Please enter thread size to use while multiplying: ")
+    threadSize = input("Please enter thread size to use for multiplying same matrixes : ")
     if not threadSize.isdigit():
-        print("Input is not correct!")
+        print("Thread input is not correct!")
         multiplyWithThreading()
 
     firstMatrix = Matrix(int(firstX), int(firstY), int(threadSize))
     secondMatrix = Matrix(int(secondX), int(secondY))
     mThread = int(threadSize)
-    thread_handle = []
+    threadList = []
 
     start_time = time.time()
-    for j in range(0, int(threadSize)):
-        t = Thread(target=firstMatrix.multiplyWithThread,
-                   args= (secondMatrix, (int(int(firstX)/mThread) * j), int((int(secondY)/mThread) * (j+1))))
-        thread_handle.append(t)
-        t.start()
-    for j in range(0, int(threadSize)):
-        thread_handle[j].join()
+    for i in range(int(threadSize)):
+        thread = Thread(target=firstMatrix.multiplyWithThread,
+                   args= (secondMatrix, (int(int(firstX)/mThread) * i), int((int(secondY)/mThread) * (i+1))))
+        thread.start()
+        threadList.append(thread)
 
-    print("Time result while using " + threadSize + " thread: ", (time.time() - start_time) , " seconds")
+    for i in range(int(threadSize)):
+        threadList[i].join()
+
+    print("Calculation time while using " + threadSize + " thread: ", (time.time() - start_time), " seconds")
+    return time.time() - start_time
 
 
 if __name__ == '__main__':
@@ -52,9 +54,11 @@ if __name__ == '__main__':
         setMatrix()
         firstMatrix = Matrix(int(firstX), int(firstY))
         secondMatrix = Matrix(int(secondX), int(secondY))
-        firstMatrix.multiply(secondMatrix)
+        oneThreadTime = firstMatrix.multiply(secondMatrix)
 
         # multiply with multithreading
-        multiplyWithThreading()
+        multiThreadTime = multiplyWithThreading()
 
+        print("First calculation with one thread:", oneThreadTime,
+              "seconds, and second calculation with multithreading:", multiThreadTime, " seconds")
 

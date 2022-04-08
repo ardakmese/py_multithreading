@@ -1,3 +1,7 @@
+# Operating Systems Homework
+# Date: 24.03.2022
+# Author : Arda AKMEŞE
+
 import random
 import time
 
@@ -15,7 +19,7 @@ class Matrix:
             for y  in range(self.mY):
                 list.append(random.uniform(0,1))
             self.mList.append(list)
-        print("Matrix to multiply: ", self.mList)
+        # print("Matrix to multiply: ", self.mList)
 
     def multiply(self, matrix):
         start_time = time.time()
@@ -25,11 +29,12 @@ class Matrix:
                 for k in range(matrix.mX):
                     res[i][j] += self.mList[i][k] * matrix.mList[k][j]
         # print("Multiplied Matrix : ", res)
-        print("Time result with one thread %s " % (time.time() - start_time), " seconds")
+        print("Calculation time with one thread: ", (time.time() - start_time), " seconds")
+        return time.time() - start_time
 
-    def multiplyWithThread(self, matrix, thStart, thEnd):
+    def multiplyWithThread(self, matrix, vecStart, vecEnd):
         res = [[0 for x in range(self.mX)] for y in range(matrix.mY)]
-        for i in range(thStart, thEnd):
+        for i in range(vecStart, vecEnd):
             for j in range(matrix.mY):
                 for k in range(matrix.mX):
                     res[i][j] += self.mList[i][k] * matrix.mList[k][j]
