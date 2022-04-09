@@ -23,7 +23,7 @@ def setMatrix():
         setMatrix()
 
 def multiplyWithThreading():
-    setMatrix()
+    # setMatrix()
     threadSize = input("Lütfen matrislerin çarpımında kullanılacak thread sayısını giriniz : ")
     if not threadSize.isdigit():
         print("Girilen thread sayısı doğru değil!")

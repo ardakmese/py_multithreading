@@ -28,12 +28,13 @@ class Reader():
             readMutex.release()
             self.readerCalledCounter += 1
             print(r"[Okuyucu process", self.readCount, r"] : Mevcut bakiye=", sharedData)
+            print("Toplam okuma sayısı:", self.readerCalledCounter)
             readMutex.acquire()
             self.readCount -= 1
             if self.readCount == 0:
                 writeMutex.release()
             readMutex.release()
-            time.sleep(random.randint(1 ,5))
+            time.sleep(random.randint(0, 5))
 
 class Writer():
     def __init__(self):
@@ -47,8 +48,9 @@ class Writer():
             sharedData = sharedData + 50
             self.writerCalledCounter += 1
             print(", 50 arttırıldı. Yeni bakiye=", sharedData)
+            print("Toplam yazma sayısı:", self.writerCalledCounter)
             writeMutex.release()
-            time.sleep(random.randint(1 ,5))
+            time.sleep(random.randint(0, 5))
 
     def writer2(self):
         while True:
@@ -59,7 +61,7 @@ class Writer():
             self.writerCalledCounter += 1
             print(", %10 azaltıldı. Yeni bakiye=", sharedData)
             writeMutex.release()
-            time.sleep(random.randint(1 ,5))
+            time.sleep(random.randint(0, 5))
 
 
 def askForReader():
@@ -84,6 +86,3 @@ if __name__ == "__main__":
 
     writer2 = threading.Thread(target=writer.writer2)
     writer2.start()
-    if input() == 'q':
-        print("quit")
-
