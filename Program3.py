@@ -28,7 +28,7 @@ class Reader():
             readMutex.release()
             self.readerCalledCounter += 1
             print(r"[Okuyucu process", self.readCount, r"] : Mevcut bakiye=", sharedData)
-            print("Toplam okuma sayısı:", self.readerCalledCounter)
+            # print("Toplam okuma sayısı:", self.readerCalledCounter)
             readMutex.acquire()
             self.readCount -= 1
             if self.readCount == 0:
@@ -48,7 +48,7 @@ class Writer():
             sharedData = sharedData + 50
             self.writerCalledCounter += 1
             print(", 50 arttırıldı. Yeni bakiye=", sharedData)
-            print("Toplam yazma sayısı:", self.writerCalledCounter)
+            # print("Toplam yazma sayısı:", self.writerCalledCounter)
             writeMutex.release()
             time.sleep(random.randint(0, 5))
 
